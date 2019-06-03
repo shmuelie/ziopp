@@ -39,11 +39,11 @@ namespace ziopp {
 	{
 		if (path == "/" || path == ".." || path == ".")
 		{
-			std::make_pair(path, std::string{});
+			return std::make_pair(path, std::string{});
 		}
 		if (path == "\\")
 		{
-			std::make_pair("/", std::string{});
+			return std::make_pair("/", std::string{});
 		}
 
 		std::vector<text_slice> parts;

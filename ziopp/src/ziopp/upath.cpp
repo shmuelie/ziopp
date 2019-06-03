@@ -47,8 +47,8 @@ namespace ziopp {
 		}
 
 		std::vector<text_slice> parts;
-		size_t lastIndex = 0;
-		size_t i = 0;
+		int lastIndex = 0;
+		int i = 0;
 		bool processParts = false;
 		int dotCount = 0;
 		for (; i < path.size(); i++)
@@ -76,7 +76,7 @@ namespace ziopp {
 					processParts = true;
 				}
 
-				size_t endIndex = i - 1;
+				int endIndex = i - 1;
 				for (i++; i < path.size(); i++)
 				{
 					c = path.at(i);
@@ -91,7 +91,7 @@ namespace ziopp {
 
 				if (endIndex >= lastIndex || endIndex == -1)
 				{
-					text_slice part{ lastIndex, endIndex };
+					text_slice part{ (size_t)lastIndex, (size_t)endIndex };
 					parts.push_back(part);
 
 					// If the previous part had only dots, we need to process it
@@ -107,7 +107,7 @@ namespace ziopp {
 
 		if (lastIndex < path.size())
 		{
-			text_slice part{ lastIndex, path.size() - 1 };
+			text_slice part{ (size_t)lastIndex, path.size() - 1 };
 			parts.push_back(part);
 
 			// If the previous part had only dots, we need to process it
@@ -140,9 +140,11 @@ namespace ziopp {
 
 			if (partLength == 1)
 			{
+				// We have a '.'
 				if (parts.size() > 1)
 				{
-					parts.erase(parts.begin() + i--);
+					parts.erase(parts.begin() + i);
+					i--;
 				}
 			}
 			else
@@ -156,7 +158,7 @@ namespace ziopp {
 				if (partLength > 2)
 				{
 					bool isValid = false;
-					for (size_t j = part.start() + 2; j < part.end(); j++)
+					for (size_t j = part.start() + 2; j <= part.end(); j++)
 					{
 						if (path.at(j) != '.')
 						{
@@ -183,8 +185,10 @@ namespace ziopp {
 							return std::make_pair(std::string{}, std::string{ "The path cannot go to the parent of a root path" });
 						}
 
-						parts.erase(parts.begin() + i--);
-						parts.erase(parts.begin() + i--);
+						parts.erase(parts.begin() + i);
+						i--;
+						parts.erase(parts.begin() + i);
+						i--;
 					}
 				}
 			}

@@ -7,8 +7,8 @@ execute_process(COMMAND conan install -if "${CMAKE_BINARY_DIR}" ${CMAKE_CURRENT_
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup(TARGETS)
 
-set(ZIOPP_TESTS_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/test_upath.hpp)
-set(ZIOPP_TESTS_SOURCE_CODE )
+set(ZIOPP_TESTS_HEADERS )
+set(ZIOPP_TESTS_SOURCE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/test_upath.cpp)
 
 add_executable(ziopp-tests ${ZIOPP_TESTS_HEADERS} ${ZIOPP_TESTS_SOURCE_CODE})
 set_target_properties(ziopp-tests PROPERTIES

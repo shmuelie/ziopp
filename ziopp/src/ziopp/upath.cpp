@@ -173,7 +173,7 @@ namespace ziopp {
 					continue;
 				}
 
-				if (i - 1 >= 0)
+				if (i > 0)
 				{
 					text_slice& previousSlice = parts.at(i - 1);
 					if (!is_dot_dot(previousSlice, path))

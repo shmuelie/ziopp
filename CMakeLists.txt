@@ -1,0 +1,22 @@
+﻿cmake_minimum_required(VERSION 3.14)
+
+project("ziopp")
+
+option(ZIOPP_BUILD_TESTS "Build Zio++ Tests" ON)
+option(ZIOPP_BUILD_STD "Build Zio++ std::filesystem based FileSystem" ON)
+option(ZIOPP_BUILD_BOOST "Build Zio++ Boost based FileSystem" ON)
+option(ZIOPP_BUILD_POCO "Build Zio++ Poco based FileSystem" ON)
+
+add_subdirectory(ziopp)
+if(ZIOPP_BUILD_TESTS)
+	add_subdirectory(ziopp.tests)
+endif()
+if(ZIOPP_BUILD_STD)
+	#add_subdirectory(ziopp.std)
+endif()
+if(ZIOPP_BUILD_BOOST)
+	#add_subdirectory(ziopp.boost)
+endif()
+if(ZIOPP_BUILD_POCO)
+	#add_subdirectory(ziopp.poco)
+endif()

@@ -6,24 +6,24 @@
 namespace ziopp {
 	struct text_slice {
 	public:
-		text_slice(size_t start, size_t end) : start_(start), end_(end)
+		text_slice(int start, int end) : start_(start), end_(end)
 		{
 		}
 
-		size_t start() const {
+		int start() const {
 			return start_;
 		}
 
-		size_t end() const {
+		int end() const {
 			return end_;
 		}
 
-		size_t size() const {
+		int size() const {
 			return end_ - start_ + 1;
 		}
 	private:
-		size_t start_;
-		size_t end_;
+		int start_;
+		int end_;
 	};
 
 	bool is_dot_dot(text_slice& slice, std::string& path)
@@ -91,7 +91,7 @@ namespace ziopp {
 
 				if (endIndex >= lastIndex || endIndex == -1)
 				{
-					text_slice part{ (size_t)lastIndex, (size_t)endIndex };
+					text_slice part{ lastIndex, endIndex };
 					parts.push_back(part);
 
 					// If the previous part had only dots, we need to process it
@@ -107,7 +107,7 @@ namespace ziopp {
 
 		if (lastIndex < path.size())
 		{
-			text_slice part{ (size_t)lastIndex, path.size() - 1 };
+			text_slice part{ lastIndex, (int)path.size() - 1 };
 			parts.push_back(part);
 
 			// If the previous part had only dots, we need to process it

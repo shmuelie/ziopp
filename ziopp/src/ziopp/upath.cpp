@@ -127,7 +127,7 @@ namespace ziopp {
 		for (i = 0; i < parts.size(); i++)
 		{
 			text_slice& part = parts.at(i);
-			size_t partLength = part.size();
+			int partLength = part.size();
 			if (partLength < 1)
 			{
 				continue;
@@ -158,7 +158,7 @@ namespace ziopp {
 				if (partLength > 2)
 				{
 					bool isValid = false;
-					for (size_t j = part.start() + 2; j <= part.end(); j++)
+					for (int j = part.start() + 2; j <= part.end(); j++)
 					{
 						if (path.at(j) != '.')
 						{

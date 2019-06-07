@@ -1,0 +1,19 @@
+jobs:
+  - job: Windows_VS2019_x86
+    pool:
+      vmImage: 'vs2019-win2016'
+    steps:
+    - script: mkdir build.common
+      displayName: Make Build Directory
+    - task: CMake@1
+      inputs:
+        workingDirectory: 'build.common'
+        cmakeArgs: '-G "Visual Studio 16 2019 Win64" -DCMAKE_CONFIGURATION_TYPES=Release ..'
+    - task: MSBuild@1
+      inputs:
+        solution: 'build.common/ALL_BUILD.vcxproj'
+        maximumCpuCount: true
+    - script: |
+        cd build.common\ziopp.tests\bin
+        .\ziopp-tests.exe
+      displayName: Run tests

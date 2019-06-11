@@ -9,6 +9,7 @@ jobs:
     - script: |
         pip install --upgrade pip
         pip install conan --upgrade
+      displayName: Install Conan
     - script: mkdir build.common
       displayName: Make Build Directory
     - task: CMake@1

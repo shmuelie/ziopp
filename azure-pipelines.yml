@@ -19,6 +19,7 @@ jobs:
       inputs:
         solution: 'build.common/ALL_BUILD.vcxproj'
         maximumCpuCount: true
+        configuration: Release
     - script: |
         cd build.common\ziopp.tests\bin
         .\ziopp-tests.exe

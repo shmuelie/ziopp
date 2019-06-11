@@ -24,7 +24,7 @@ jobs:
     - task: CMake@1
       inputs:
         workingDirectory: 'build.common'
-        cmakeArgs: '--build'
+        cmakeArgs: '--build ./'
       displayName: Build using CMake
     - script: |
         cd build.common/ziopp.tests/bin

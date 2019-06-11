@@ -26,7 +26,7 @@ namespace ziopp {
 		int end_;
 	};
 
-	bool is_dot_dot(text_slice& slice, std::string& path)
+	bool is_dot_dot(text_slice& slice, const std::string& path)
 	{
 		if (slice.size() != 2)
 		{
@@ -35,7 +35,7 @@ namespace ziopp {
 		return path.at(slice.start()) == '.' && path.at(slice.end()) == '.';
 	}
 
-	std::pair<std::string, std::string> validate_and_normalize(std::string& path)
+	std::pair<std::string, std::string> validate_and_normalize(const std::string& path)
 	{
 		if (path == "/" || path == ".." || path == ".")
 		{
@@ -216,15 +216,15 @@ namespace ziopp {
 		return std::make_pair(builder, std::string{});
 	}
 
-	upath::upath() : upath(std::string{ "" })
+	upath::upath() : upath(std::string{ })
 	{
 	}
 
-	upath::upath(std::string& path) : upath(path, false)
+	upath::upath(const std::string& path) : upath(path, false)
 	{
 	}
 
-	upath::upath(std::string& path, bool safe)
+	upath::upath(const std::string& path, bool safe)
 	{
 		if (safe)
 		{
@@ -239,7 +239,7 @@ namespace ziopp {
 			}
 			else
 			{
-				throw std::exception(result.second.c_str());
+				throw std::invalid_argument(result.second.c_str());
 			}
 		}
 	}

@@ -9,7 +9,7 @@ namespace ziopp {
 
 		explicit upath();
 
-		upath(std::string& path);
+		upath(const std::string& path);
 
 		const std::string& full_name() const;
 
@@ -31,7 +31,7 @@ namespace ziopp {
 
 		const upath operator/(const upath& other);
 	private:
-		explicit upath(std::string& path, bool safe);
+		explicit upath(const std::string& path, bool safe);
 
 		std::string full_name_;
 	};

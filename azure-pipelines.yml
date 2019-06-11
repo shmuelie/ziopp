@@ -7,8 +7,8 @@ jobs:
     inputs:
       versionSpec: '3.6'
     - script: |
-      pip install --upgrade pip
-      pip install conan --upgrade
+        pip install --upgrade pip
+        pip install conan --upgrade
     - script: mkdir build.common
       displayName: Make Build Directory
     - task: CMake@1

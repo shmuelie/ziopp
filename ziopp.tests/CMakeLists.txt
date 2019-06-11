@@ -3,11 +3,17 @@ project("ziopp")
 
 set(TEST_TARGET_NAME ziopp-tests)
 
-execute_process(COMMAND conan install -s build_type=${CMAKE_CONFIGURATION_TYPES} -if "${CMAKE_BINARY_DIR}/${TEST_TARGET_NAME}" ${CMAKE_CURRENT_SOURCE_DIR}/conanfile.txt
-		        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/conan.cmake")
+   message(STATUS "Downloading conan.cmake from https://github.com/conan-io/cmake-conan")
+   file(DOWNLOAD "https://github.com/conan-io/cmake-conan/raw/v0.14/conan.cmake"
+                 "${CMAKE_BINARY_DIR}/conan.cmake")
+endif()
 
-include(${CMAKE_BINARY_DIR}/${TEST_TARGET_NAME}/conanbuildinfo.cmake)
-conan_basic_setup(TARGETS)
+include(${CMAKE_BINARY_DIR}/conan.cmake)
+set(CMAKE_BUILD_TYPE ${CMAKE_CONFIGURATION_TYPES})
+conan_cmake_run(CONANFILE conanfile.txt
+                BASIC_SETUP CMAKE_TARGETS
+                BUILD missing)
 
 set(ZIOPP_TESTS_HEADERS )
 set(ZIOPP_TESTS_SOURCE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/test_upath.cpp)

@@ -1,0 +1,33 @@
+parameters:
+    name: ''
+    vmImage: ''
+    generator: ''
+    arch: ''
+
+jobs:
+  - job: ${{ parameters.name }}
+    pool:
+      vmImage: ${{ parameters.vmImage }}
+    steps:
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.6'
+    - script: |
+        pip install --upgrade pip
+        pip install conan --upgrade
+      displayName: Install Conan
+    - script: mkdir build.common
+      displayName: Make Build Directory
+    - task: CMake@1
+      inputs:
+        workingDirectory: 'build.common'
+        cmakeArgs: '-G "${{ parameters.generator }}" -A ${{ parameters.arch }} -DCMAKE_CONFIGURATION_TYPES=Release ..'
+    - task: MSBuild@1
+      inputs:
+        solution: 'build.common/ALL_BUILD.vcxproj'
+        maximumCpuCount: true
+        configuration: Release
+    - script: |
+        cd build.common\ziopp.tests\bin
+        .\ziopp-tests.exe
+      displayName: Run tests

@@ -228,14 +228,14 @@ namespace ziopp {
 	{
 		if (safe)
 		{
-			full_name = path;
+			full_name_ = path;
 		}
 		else
 		{
 			auto result = validate_and_normalize(path);
 			if (result.second.empty())
 			{
-				full_name = result.first;
+				full_name_ = result.first;
 			}
 			else
 			{
@@ -244,19 +244,19 @@ namespace ziopp {
 		}
 	}
 
-	const std::string& upath::get_full_name() const
+	const std::string& upath::full_name() const
 	{
-		return full_name;
+		return full_name_;
 	}
 
 	bool upath::empty() const
 	{
-		return full_name.empty();
+		return full_name_.empty();
 	}
 
 	bool upath::absolute() const
 	{
-		return !empty() && full_name.at(0) == '/';
+		return !empty() && full_name_.at(0) == '/';
 	}
 
 	bool upath::relative() const
@@ -266,7 +266,7 @@ namespace ziopp {
 
 	bool upath::equals(const upath& other) const
 	{
-		return full_name.compare(other.full_name) == 0;
+		return full_name_.compare(other.full_name_) == 0;
 	}
 
 	bool upath::operator==(const upath& other) const
@@ -281,7 +281,7 @@ namespace ziopp {
 
 	upath::operator std::string() const
 	{
-		return full_name;
+		return full_name_;
 	}
 
 	const upath upath::combine(const upath& path1, const upath& path2)
@@ -300,11 +300,11 @@ namespace ziopp {
 		std::stringstream builder;
 		if (!path1.empty())
 		{
-			builder << path1.full_name << '/';
+			builder << path1.full_name_ << '/';
 		}
 		if (!path2.empty())
 		{
-			builder << path2.full_name;
+			builder << path2.full_name_;
 		}
 
 		return upath{ builder.str() };

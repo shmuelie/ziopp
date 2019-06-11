@@ -32,7 +32,7 @@ protected:
 
 TEST_P(TestNormalizeFixture, TestNormalize) {
 	ziopp::upath path{ pathAsText };
-	ASSERT_EQ(expectedResult, path.get_full_name());
+	ASSERT_EQ(expectedResult, path.full_name());
 
 	// Check Equatable
 	ziopp::upath expectedPath{ expectedResult };

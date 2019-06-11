@@ -11,7 +11,7 @@ namespace ziopp {
 
 		upath(std::string& path);
 
-		const std::string& get_full_name() const;
+		const std::string& full_name() const;
 
 		bool empty() const;
 
@@ -33,6 +33,6 @@ namespace ziopp {
 	private:
 		explicit upath(std::string& path, bool safe);
 
-		std::string full_name;
+		std::string full_name_;
 	};
 }

@@ -13,13 +13,6 @@ jobs:
     arch: 'x64'
 - template: azure-pipelines-linux.yml
   parameters:
-    name: 'Linux_GCC_x86'
+    name: 'Linux_GCC'
     vmImage: 'ubuntu-16.04'
     generator: 'Unix Makefiles'
-    arch: 'x86'
-- template: azure-pipelines-linux.yml
-  parameters:
-    name: 'Linux_GCC_x64'
-    vmImage: 'ubuntu-16.04'
-    generator: 'Unix Makefiles'
-    arch: 'x64'

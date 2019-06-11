@@ -2,7 +2,6 @@ parameters:
     name: ''
     vmImage: ''
     generator: ''
-    arch: ''
 
 jobs:
   - job: ${{ parameters.name }}
@@ -21,7 +20,7 @@ jobs:
     - task: CMake@1
       inputs:
         workingDirectory: 'build.common'
-        cmakeArgs: '-G "${{ parameters.generator }}" -A ${{ parameters.arch }} -DCMAKE_CONFIGURATION_TYPES=Release ..'
+        cmakeArgs: '-G "${{ parameters.generator }}" -DCMAKE_CONFIGURATION_TYPES=Release ..'
     - task: CMake@1
       inputs:
         workingDirectory: 'build.common'

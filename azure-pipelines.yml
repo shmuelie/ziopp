@@ -8,7 +8,7 @@ jobs:
     - task: CMake@1
       inputs:
         workingDirectory: 'build.common'
-        cmakeArgs: '-G "Visual Studio 16 2019" -DCMAKE_CONFIGURATION_TYPES=Release ..'
+        cmakeArgs: '-G "Visual Studio 16 2019" -A Win32 -DCMAKE_CONFIGURATION_TYPES=Release ..'
     - task: MSBuild@1
       inputs:
         solution: 'build.common/ALL_BUILD.vcxproj'

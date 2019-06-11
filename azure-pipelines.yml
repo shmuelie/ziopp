@@ -11,3 +11,15 @@ jobs:
     vmImage: 'windows-2019'
     generator: 'Visual Studio 16 2019'
     arch: 'x64'
+- template: azure-pipelines-linux.yml
+  parameters:
+    name: 'Linux_GCC_x86'
+    vmImage: 'ubuntu-16.04'
+    generator: 'Unix Makefiles'
+    arch: 'x86'
+- template: azure-pipelines-linux.yml
+  parameters:
+    name: 'Linux_GCC_x64'
+    vmImage: 'ubuntu-16.04'
+    generator: 'Unix Makefiles'
+    arch: 'x64'

@@ -1,7 +1,6 @@
 #include <ziopp/upath.h>
 #include <utility>
 #include <sstream>
-#include <vector>
 
 namespace ziopp {
 	struct text_slice {
@@ -323,5 +322,120 @@ namespace ziopp {
 	const upath upath::operator/(const upath& other)
 	{
 		return combine(*this, other);
+	}
+
+	const upath upath::to_relative() const
+	{
+		if (relative())
+		{
+			return upath{full_name_, true};
+		}
+		return full_name_ == "/" ? upath{} : upath{full_name_.substr(1), true};
+	}
+
+	const upath upath::to_absolute() const
+	{
+		if (absolute())
+		{
+			return upath{full_name_, true};
+		}
+		return empty() ? upath{"/", true} : upath{"/", true} / *this;
+	}
+
+	const upath upath::directory() const
+	{
+		if (full_name_ == "/")
+		{
+			return upath{};
+		}
+
+		auto const last_index = full_name_.find_last_of(directory_seperator);
+		if (last_index != std::string::npos && last_index > 0)
+		{
+			return upath{full_name_.substr(0, last_index)};
+		}
+		return last_index == 0 ? upath{"/", true} : upath{};
+	}
+
+	const std::string& upath::first_directory() const
+	{
+		auto const index = full_name_.find_first_of(directory_seperator);
+		if (index == std::string::npos)
+		{
+			return full_name_.substr(1, full_name_.size() - 1);
+		}
+		return full_name_.substr(1, index - 1);
+	}
+
+	const std::vector<std::string> upath::Split() const
+	{
+		if (empty())
+		{
+			return std::vector<std::string>{};
+		}
+
+		std::vector<std::string> paths;
+		size_t previous_index = absolute() ? 1 : 0;
+		size_t next_index = 0;
+		while ((next_index = full_name_.find_first_of(directory_seperator, previous_index)) != std::string::npos)
+		{
+			if (next_index != 0)
+			{
+				paths.push_back(full_name_.substr(previous_index, next_index - previous_index));
+			}
+
+			previous_index = next_index + 1;
+		}
+
+		if (previous_index < full_name_.size())
+		{
+			paths.push_back(full_name_.substr(previous_index, full_name_.size() - previous_index));
+		}
+		return paths;
+	}
+
+	bool upath::in_directory(const upath& directory, bool recursive) const
+	{
+		if (absolute() != directory.absolute())
+		{
+			throw new std::invalid_argument("Cannot mix absolute and relative paths");
+		}
+
+		const std::string& target = full_name_;
+		const std::string& dir = directory.full_name_;
+
+		if (target.size() < dir.length() || target.find_first_of(dir) == std::string::npos)
+		{
+			return false;
+		}
+
+		if (target.size() == dir.size())
+		{
+			// exact match due to the StartsWith above
+            // the directory parameter is interpreted as a directory so trailing separator isn't important
+			return true;
+		}
+
+		bool dir_has_trailing_separator = dir.at(dir.size() - 1) == directory_seperator;
+
+		if (!recursive)
+		{
+			// need to check if the directory part terminates
+			const auto last_separator_in_target = target.find_last_of(directory_seperator);
+			const auto expected_last_separator = dir.size() - (dir_has_trailing_separator ? 1 : 0);
+
+			if (last_separator_in_target != expected_last_separator)
+			{
+				return false;
+			}
+		}
+
+		if (!dir_has_trailing_separator)
+		{
+			// directory is missing ending slash, check that target has it
+			return target.size() > dir.size() && target.at(dir.size()) == directory_seperator;
+		}
+
+		return true;
 	}
 }

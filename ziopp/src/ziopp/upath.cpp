@@ -438,4 +438,91 @@ namespace ziopp {
 
 		return true;
 	}
+
+	const std::string upath::name() const
+	{
+		size_t length = full_name_.size();
+		for (size_t i = length; --i >= 0 && i != std::string::npos;)
+		{
+			char ch = full_name_.at(i);
+			if (ch == directory_seperator)
+			{
+				return full_name_.substr(i + 1, length - i - 1);
+			}
+		}
+		return full_name_;
+	}
+
+	const std::string upath::name_without_extension() const
+	{
+		const std::string& path = name();
+		size_t i;
+		if ((i = path.find_last_of('.')) == std::string::npos)
+		{
+			return path;
+		}
+		return path.substr(0, i);
+	}
+
+	const std::string upath::extension_with_dot() const
+	{
+		size_t length = full_name_.size();
+		for (size_t i = length; --i >= 0;)
+		{
+			char ch = full_name_.at(i);
+			if (ch == '.')
+			{
+				if (i != length -1)
+				{
+					return full_name_.substr(i, length - i);
+				}
+				else
+				{
+					return std::string{};
+				}
+			}
+			if (ch == directory_seperator)
+			{
+				break;
+			}
+		}
+		return std::string{};
+	}
+
+	const std::string _change_extension(const std::string path, const std::string* extension)
+	{
+		std::string s = path;
+		for (size_t i = path.size(); --i >=0;)
+		{
+			char ch = path.at(i);
+			if (ch == '.')
+			{
+				s = path.substr(0, i);
+				break;
+			}
+			if (ch == upath::directory_seperator)
+			{
+				break;
+			}
+		}
+		if (extension != nullptr && path.size() != 0)
+		{
+			if (extension->size() == 0 || extension->at(0) != '.')
+			{
+				s += '.';
+			}
+			s += *extension;
+		}
+		return s;
+	}
+
+	const upath upath::change_extension(const std::string& extension) const
+	{
+		return upath{_change_extension(full_name_, &extension)};
+	}
+
+	const upath upath::remove_extension() const
+	{
+		return upath{_change_extension(full_name_, nullptr)};
+	}
 }

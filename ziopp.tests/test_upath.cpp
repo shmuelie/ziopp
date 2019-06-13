@@ -20,17 +20,19 @@ TEST(UPath, TestAbsoluteAndRelative) {
 	ASSERT_TRUE(path.empty());
 }
 
-class TestNormalizeFixture : public ::testing::TestWithParam<std::pair<std::string, std::string>> {
-public:
-	void SetUp() override {
-		auto param = GetParam();
-		pathAsText = param.first;
-		expectedResult = param.second;
-	}
-protected:
-	std::string pathAsText;
-	std::string expectedResult;
-};
+#define TEST_STRING_PAIR_FIXTURE(NAME, PARAMA, PARAMB) class NAME ## Fixture : public ::testing::TestWithParam<std::pair<std::string, std::string>> { \
+public: \
+void SetUp() override { \
+	auto param = GetParam(); \
+	PARAMA = param.first; \
+	PARAMB = param.second; \
+} \
+protected: \
+	std::string PARAMA; \
+	std::string PARAMB; \
+}
+
+TEST_STRING_PAIR_FIXTURE(TestNormalize, pathAsText, expectedResult);
 
 TEST_P(TestNormalizeFixture, TestNormalize) {
 	ziopp::upath path{ pathAsText };
@@ -180,19 +182,7 @@ INSTANTIATE_TEST_CASE_P(
 		std::make_tuple(std::string{ "/a" }, std::string{ "/b" }, std::string{ "/c" }, std::string{ "/c" })
 	));
 
-class TestGetDirectoryFixture : public ::testing::TestWithParam<std::pair<std::string, std::string>>
-{
-public:
-	void SetUp() override
-	{
-		auto param = GetParam();
-		path1 = param.first;
-		expectedDir = param.second;
-	}
-protected:
-	std::string path1;
-	std::string expectedDir;
-};
+TEST_STRING_PAIR_FIXTURE(TestGetDirectory, path1, expectedDir);
 
 TEST_P(TestGetDirectoryFixture, TestGetDirectory) {
 	ziopp::upath path{path1};
@@ -262,4 +252,48 @@ INSTANTIATE_TEST_CASE_P(
         std::make_tuple(std::string{ "/a/b/" }, std::string{ "/a/b/" }, true, true),
         std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, false, true),
         std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, true, true)
+	));
+
+TEST_STRING_PAIR_FIXTURE(TestName, path1, expectedName);
+
+TEST_P(TestNameFixture, TestName) {
+	ziopp::upath path{ path1 };
+	const std::string result = path.name();
+	ASSERT_EQ(expectedName, result);
+}
+
+INSTANTIATE_TEST_CASE_P(
+	Tests,
+	TestNameFixture,
+	::testing::Values(
+		std::make_pair(std::string{}, std::string{}),
+		std::make_pair(std::string{ "/" }, std::string{}),
+		std::make_pair(std::string{ "/a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
+		std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c.txt" }),
+		std::make_pair(std::string{ "a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "../a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
+	));
+
+TEST_STRING_PAIR_FIXTURE(TestNameWithoutExtension, path1, expectedName);
+
+TEST_P(TestNameWithoutExtensionFixture, TestNameWithoutExtension) {
+	ziopp::upath path{ path1 };
+	const std::string result = path.name_without_extension();
+	ASSERT_EQ(expectedName, result);
+}
+
+INSTANTIATE_TEST_CASE_P(
+	Tests,
+	TestNameWithoutExtensionFixture,
+	::testing::Values(
+		std::make_pair(std::string{ "" }, std::string{ "" }),
+		std::make_pair(std::string{ "/" }, std::string{ "" }),
+		std::make_pair(std::string{ "/a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
+		std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c" }),
+		std::make_pair(std::string{ "a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "../a" }, std::string{ "a" }),
+		std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
 	));

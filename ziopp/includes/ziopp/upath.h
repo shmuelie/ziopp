@@ -134,6 +134,42 @@ namespace ziopp {
 		 * @return false The path is not in the given directory.
 		 */
 		bool in_directory(const upath& directory, bool recursive) const;
+
+		/**
+		 * @brief Gets the file or last directory name and extension of the specified path.
+		 *
+		 * @return const std::string The characters after the last directory character in path.
+		 */
+		const std::string name() const;
+
+		/**
+		 * @brief Gets the file or last directory name without the extension for the specified path.
+		 *
+		 * @return const std::string The characters after the last directory character in path without the extension.
+		 */
+		const std::string name_without_extension() const;
+
+		/**
+		 * @brief Gets the extension of the specified path.
+		 *
+		 * @return const std::string The extension of the specified path (including the period ".").
+		 */
+		const std::string extension_with_dot() const;
+
+		/**
+		 * @brief Changes the extension of a path.
+		 *
+		 * @param extension The new extension (with or without a leading period).
+		 * @return const upath The modified path information.
+		 */
+		const upath change_extension(const std::string& extension) const;
+
+		/**
+		 * @brief Removes the extension of a path.
+		 *
+		 * @return const upath The modified path information.
+		 */
+		const upath remove_extension() const;
 	private:
 		explicit upath(const std::string& path, bool safe);
 

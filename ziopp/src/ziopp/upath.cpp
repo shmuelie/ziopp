@@ -357,7 +357,7 @@ namespace ziopp {
 		return last_index == 0 ? upath{"/", true} : upath{};
 	}
 
-	const std::string& upath::first_directory() const
+	const std::string upath::first_directory() const
 	{
 		auto const index = full_name_.find_first_of(directory_seperator);
 		if (index == std::string::npos)

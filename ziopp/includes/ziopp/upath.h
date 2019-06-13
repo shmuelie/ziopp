@@ -116,7 +116,7 @@ namespace ziopp {
 		 *
 		 * @return const std::string& The first directory of the path.
 		 */
-		const std::string& first_directory() const;
+		const std::string first_directory() const;
 
 		/**
 		 * @brief Splits the path by directories using the directory separator character `/`.

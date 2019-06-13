@@ -14,6 +14,8 @@ TEST(UPath, TestAbsoluteAndRelative) {
 	ASSERT_FALSE(path.relative());
 	ASSERT_TRUE(path.absolute());
 
+	ASSERT_EQ(path.full_name(), path.to_absolute().full_name());
+
 	path = ziopp::upath{};
 	ASSERT_TRUE(path.empty());
 }
@@ -46,7 +48,7 @@ INSTANTIATE_TEST_CASE_P(
 	TestNormalizeFixture,
 	::testing::Values(
 		// Test Empty
-		std::make_pair(std::string{ "" }, std::string{ "" }),
+		std::make_pair(std::string{}, std::string{}),
 
 		// Tests with regular paths
 		std::make_pair(std::string{ "/" }, std::string{ "/" }),
@@ -67,7 +69,7 @@ INSTANTIATE_TEST_CASE_P(
 		std::make_pair(std::string{ "a/../c" }, std::string{ "c" }),
 		std::make_pair(std::string{ "a/b/.." }, std::string{ "a" }),
 		std::make_pair(std::string{ "a/b/c/../.." }, std::string{ "a" }),
-		std::make_pair(std::string{ "a/b/c/../../.." }, std::string{ "" }),
+		std::make_pair(std::string{ "a/b/c/../../.." }, std::string{}),
 		std::make_pair(std::string{ "./.." }, std::string{ ".." }),
 		std::make_pair(std::string{ "../." }, std::string{ ".." }),
 		std::make_pair(std::string{ "../.." }, std::string{ "../.." }),
@@ -75,7 +77,7 @@ INSTANTIATE_TEST_CASE_P(
 		std::make_pair(std::string{ ".a" }, std::string{ ".a" }),
 		std::make_pair(std::string{ ".a/b/.." }, std::string{ ".a" }),
 		std::make_pair(std::string{ "...a/b../" }, std::string{ "...a/b.." }),
-		std::make_pair(std::string{ "...a/.." }, std::string{ "" }),
+		std::make_pair(std::string{ "...a/.." }, std::string{}),
 		std::make_pair(std::string{ "...a/b/.." }, std::string{ "...a" })
 	));
 
@@ -108,36 +110,36 @@ INSTANTIATE_TEST_CASE_P(
 	Tests,
 	TestCombineFixture,
 	::testing::Values(
-		std::make_tuple(std::string{ "" }, std::string{ "" }, std::string{ "" }),
-		std::make_tuple(std::string{ "/" }, std::string{ "" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "\\" }, std::string{ "" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "//" }, std::string{ "" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "\\\\" }, std::string{ "" }, std::string{ "/" }),
+		std::make_tuple(std::string{}, std::string{}, std::string{}),
+		std::make_tuple(std::string{ "/" }, std::string{}, std::string{ "/" }),
+		std::make_tuple(std::string{ "\\" }, std::string{}, std::string{ "/" }),
+		std::make_tuple(std::string{ "//" }, std::string{}, std::string{ "/" }),
+		std::make_tuple(std::string{ "\\\\" }, std::string{}, std::string{ "/" }),
 		std::make_tuple(std::string{ "/" }, std::string{ "/" }, std::string{ "/" }),
 		std::make_tuple(std::string{ "\\" }, std::string{ "\\" }, std::string{ "/" }),
 		std::make_tuple(std::string{ "//" }, std::string{ "//" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "" }, std::string{ "/" }, std::string{ "/" }),
+		std::make_tuple(std::string{}, std::string{ "/" }, std::string{ "/" }),
 		std::make_tuple(std::string{ "a" }, std::string{ "b" }, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "a/b" }, std::string{ "c" }, std::string{ "a/b/c" }),
-		std::make_tuple(std::string{ "" }, std::string{ "b" }, std::string{ "b" }),
-		std::make_tuple(std::string{ "a" }, std::string{ "" }, std::string{ "a" }),
-		std::make_tuple(std::string{ "a/b" }, std::string{ "" }, std::string{ "a/b" }),
+		std::make_tuple(std::string{}, std::string{ "b" }, std::string{ "b" }),
+		std::make_tuple(std::string{ "a" }, std::string{}, std::string{ "a" }),
+		std::make_tuple(std::string{ "a/b" }, std::string{}, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "/a" }, std::string{ "b/" }, std::string{ "/a/b" }),
 		std::make_tuple(std::string{ "/a" }, std::string{ "/b" }, std::string{ "/b" }),
-		std::make_tuple(std::string{ "/a" }, std::string{ "" }, std::string{ "/a" }),
-		std::make_tuple(std::string{ "//a" }, std::string{ "" }, std::string{ "/a" }),
-		std::make_tuple(std::string{ "a/" }, std::string{ "" }, std::string{ "a" }),
-		std::make_tuple(std::string{ "a//" }, std::string{ "" }, std::string{ "a" }),
+		std::make_tuple(std::string{ "/a" }, std::string{}, std::string{ "/a" }),
+		std::make_tuple(std::string{ "//a" }, std::string{}, std::string{ "/a" }),
+		std::make_tuple(std::string{ "a/" }, std::string{}, std::string{ "a" }),
+		std::make_tuple(std::string{ "a//" }, std::string{}, std::string{ "a" }),
 		std::make_tuple(std::string{ "a/" }, std::string{ "b" }, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "a/" }, std::string{ "b/" }, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "a//" }, std::string{ "b//" }, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "a" }, std::string{ "../b" }, std::string{ "b" }),
 		std::make_tuple(std::string{ "a/../" }, std::string{ "b" }, std::string{ "b" }),
 		std::make_tuple(std::string{ "/a/.." }, std::string{ "b" }, std::string{ "/b" }),
-		std::make_tuple(std::string{ "/a/.." }, std::string{ "" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "//a//..//" }, std::string{ "" }, std::string{ "/" }),
-		std::make_tuple(std::string{ "\\a" }, std::string{ "" }, std::string{ "/a" }),
-		std::make_tuple(std::string{ "\\\\a" }, std::string{ "" }, std::string{ "/a" })
+		std::make_tuple(std::string{ "/a/.." }, std::string{}, std::string{ "/" }),
+		std::make_tuple(std::string{ "//a//..//" }, std::string{}, std::string{ "/" }),
+		std::make_tuple(std::string{ "\\a" }, std::string{}, std::string{ "/a" }),
+		std::make_tuple(std::string{ "\\\\a" }, std::string{}, std::string{ "/a" })
 	));
 
 class TestCombine3Fixture : public ::testing::TestWithParam<std::tuple<std::string, std::string, std::string, std::string>> {
@@ -161,19 +163,103 @@ TEST_P(TestCombine3Fixture, TestCombine3) {
 
 	ASSERT_EQ(expectedResult, (std::string)path);
 	ziopp::upath expectedPath{ expectedResult };
-	ASSERT_TRUE(path.equals(expectedPath));;
+	ASSERT_TRUE(path.equals(expectedPath));
 }
 
 INSTANTIATE_TEST_CASE_P(
 	Tests,
 	TestCombine3Fixture,
 	::testing::Values(
-		std::make_tuple(std::string{ "" }, std::string{ "" }, std::string{ "" }, std::string{ "" }),
+		std::make_tuple(std::string{}, std::string{}, std::string{}, std::string{}),
 		std::make_tuple(std::string{ "a" }, std::string{ "b" }, std::string{ "c" }, std::string{ "a/b/c" }),
 		std::make_tuple(std::string{ "a/b" }, std::string{ "c" }, std::string{ "d" }, std::string{ "a/b/c/d" }),
-		std::make_tuple(std::string{ "" }, std::string{ "b" }, std::string{ "" }, std::string{ "b" }),
-		std::make_tuple(std::string{ "a" }, std::string{ "" }, std::string{ "" }, std::string{ "a" }),
-		std::make_tuple(std::string{ "a/b" }, std::string{ "" }, std::string{ "" }, std::string{ "a/b" }),
+		std::make_tuple(std::string{}, std::string{ "b" }, std::string{}, std::string{ "b" }),
+		std::make_tuple(std::string{ "a" }, std::string{}, std::string{}, std::string{ "a" }),
+		std::make_tuple(std::string{ "a/b" }, std::string{}, std::string{}, std::string{ "a/b" }),
 		std::make_tuple(std::string{ "/a" }, std::string{ "b/" }, std::string{ "c/" }, std::string{ "/a/b/c" }),
 		std::make_tuple(std::string{ "/a" }, std::string{ "/b" }, std::string{ "/c" }, std::string{ "/c" })
+	));
+
+class TestGetDirectoryFixture : public ::testing::TestWithParam<std::pair<std::string, std::string>>
+{
+public:
+	void SetUp() override
+	{
+		auto param = GetParam();
+		path1 = param.first;
+		expectedDir = param.second;
+	}
+protected:
+	std::string path1;
+	std::string expectedDir;
+};
+
+TEST_P(TestGetDirectoryFixture, TestGetDirectory) {
+	ziopp::upath path{path1};
+	const ziopp::upath result = path.directory();
+	ASSERT_EQ(expectedDir, result.full_name());
+}
+
+INSTANTIATE_TEST_CASE_P(
+	Tests,
+	TestGetDirectoryFixture,
+	::testing::Values(
+		std::make_pair(std::string{}, std::string{}),
+		std::make_pair(std::string{"/a"}, std::string{"/"}),
+		std::make_pair(std::string{"/a/b"}, std::string{"/a"}),
+		std::make_pair(std::string{"/a/b/c.txt"}, std::string{"/a/b"}),
+		std::make_pair(std::string{"a"}, std::string{}),
+		std::make_pair(std::string{"../a"}, std::string{".."}),
+		std::make_pair(std::string{"../../a/b"}, std::string{"../../a"})
+	));
+
+class TestInDirectoryFixture : public ::testing::TestWithParam<std::tuple<std::string, std::string, bool, bool>>
+{
+public:
+	void SetUp() override
+	{
+		auto param = GetParam();
+		path1 = std::get<0>(param);
+		directory = std::get<1>(param);
+		recursive = std::get<2>(param);
+		expected = std::get<3>(param);
+	}
+protected:
+	std::string path1;
+	std::string directory;
+	bool recursive;
+	bool expected;
+};
+
+TEST_P(TestInDirectoryFixture, TestInDirectory) {
+	ziopp::upath path{path1};
+	bool result = path.in_directory(directory, recursive);
+	ASSERT_EQ(expected, result);
+}
+
+INSTANTIATE_TEST_CASE_P(
+	Tests,
+	TestInDirectoryFixture,
+	::testing::Values(
+		// Test automatic separator insertion
+        std::make_tuple(std::string{ "/a/b/c" }, std::string{ "/a/b" }, false, true),
+        std::make_tuple(std::string{ "/a/bc" }, std::string{ "/a/b" }, false, false),
+
+        // Test trailing separator
+        std::make_tuple(std::string{ "/a/b/" }, std::string{ "/a" }, false, true),
+        std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/" }, false, true),
+        std::make_tuple(std::string{ "/a/b/" }, std::string{ "/a/" }, false, true),
+
+        // Test recursive option
+        std::make_tuple(std::string{ "/a/b/c" }, std::string{ "/a" }, true, true),
+        std::make_tuple(std::string{ "/a/b/c" }, std::string{ "/a" }, false, false),
+
+        // Test relative paths
+        std::make_tuple(std::string{ "a/b" }, std::string{ "a" }, false, true),
+
+        // Test exact match
+        std::make_tuple(std::string{ "/a/b/" }, std::string{ "/a/b/" }, false, true),
+        std::make_tuple(std::string{ "/a/b/" }, std::string{ "/a/b/" }, true, true),
+        std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, false, true),
+        std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, true, true)
 	));

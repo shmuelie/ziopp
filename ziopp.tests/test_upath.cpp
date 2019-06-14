@@ -32,9 +32,11 @@ protected: \
 	std::string PARAMB; \
 }
 
-TEST_STRING_PAIR_FIXTURE(TestNormalize, pathAsText, expectedResult);
+#define TEST_STRING_PAIR(NAME, PARAMA, PARAMB, TEST, ...) TEST_STRING_PAIR_FIXTURE(NAME, PARAMA, PARAMB);\
+TEST_P(NAME ## Fixture, NAME) TEST \
+INSTANTIATE_TEST_CASE_P(Tests, NAME ## Fixture, ::testing::Values(__VA_ARGS__))
 
-TEST_P(TestNormalizeFixture, TestNormalize) {
+TEST_STRING_PAIR(Normalize, pathAsText, expectedResult, {
 	ziopp::upath path{ pathAsText };
 	ASSERT_EQ(expectedResult, path.full_name());
 
@@ -43,45 +45,40 @@ TEST_P(TestNormalizeFixture, TestNormalize) {
 	ASSERT_TRUE(expectedPath.equals(path));
 	ASSERT_TRUE(path == expectedPath);
 	ASSERT_FALSE(path != expectedPath);
-}
+},
+// Test Empty
+std::make_pair(std::string{}, std::string{}),
 
-INSTANTIATE_TEST_CASE_P(
-	Tests,
-	TestNormalizeFixture,
-	::testing::Values(
-		// Test Empty
-		std::make_pair(std::string{}, std::string{}),
+// Tests with regular paths
+std::make_pair(std::string{ "/" }, std::string{ "/" }),
+std::make_pair(std::string{ "\\" }, std::string{ "/" }),
+std::make_pair(std::string{ "a" }, std::string{ "a" }),
+std::make_pair(std::string{ "a/b" }, std::string{ "a/b" }),
+std::make_pair(std::string{ "a\\b" }, std::string{ "a/b" }),
+std::make_pair(std::string{ "a/b/" }, std::string{ "a/b" }),
+std::make_pair(std::string{ "a\\b\\" }, std::string{ "a/b" }),
+std::make_pair(std::string{ "a///b/c//d" }, std::string{ "a/b/c/d" }),
+std::make_pair(std::string{ "///a///b/c//" }, std::string{ "/a/b/c" }),
+std::make_pair(std::string{ "a/b/c" }, std::string{ "a/b/c" }),
+std::make_pair(std::string{ "/a/b" }, std::string{ "/a/b" }),
 
-		// Tests with regular paths
-		std::make_pair(std::string{ "/" }, std::string{ "/" }),
-		std::make_pair(std::string{ "\\" }, std::string{ "/" }),
-		std::make_pair(std::string{ "a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "a/b" }, std::string{ "a/b" }),
-		std::make_pair(std::string{ "a\\b" }, std::string{ "a/b" }),
-		std::make_pair(std::string{ "a/b/" }, std::string{ "a/b" }),
-		std::make_pair(std::string{ "a\\b\\" }, std::string{ "a/b" }),
-		std::make_pair(std::string{ "a///b/c//d" }, std::string{ "a/b/c/d" }),
-		std::make_pair(std::string{ "///a///b/c//" }, std::string{ "/a/b/c" }),
-		std::make_pair(std::string{ "a/b/c" }, std::string{ "a/b/c" }),
-		std::make_pair(std::string{ "/a/b" }, std::string{ "/a/b" }),
-
-		// Tests with ".."
-		std::make_pair(std::string{ ".." }, std::string{ ".." }),
-		std::make_pair(std::string{ "../../a/.." }, std::string{ "../.." }),
-		std::make_pair(std::string{ "a/../c" }, std::string{ "c" }),
-		std::make_pair(std::string{ "a/b/.." }, std::string{ "a" }),
-		std::make_pair(std::string{ "a/b/c/../.." }, std::string{ "a" }),
-		std::make_pair(std::string{ "a/b/c/../../.." }, std::string{}),
-		std::make_pair(std::string{ "./.." }, std::string{ ".." }),
-		std::make_pair(std::string{ "../." }, std::string{ ".." }),
-		std::make_pair(std::string{ "../.." }, std::string{ "../.." }),
-		std::make_pair(std::string{ "../../" }, std::string{ "../.." }),
-		std::make_pair(std::string{ ".a" }, std::string{ ".a" }),
-		std::make_pair(std::string{ ".a/b/.." }, std::string{ ".a" }),
-		std::make_pair(std::string{ "...a/b../" }, std::string{ "...a/b.." }),
-		std::make_pair(std::string{ "...a/.." }, std::string{}),
-		std::make_pair(std::string{ "...a/b/.." }, std::string{ "...a" })
-	));
+// Tests with ".."
+std::make_pair(std::string{ ".." }, std::string{ ".." }),
+std::make_pair(std::string{ "../../a/.." }, std::string{ "../.." }),
+std::make_pair(std::string{ "a/../c" }, std::string{ "c" }),
+std::make_pair(std::string{ "a/b/.." }, std::string{ "a" }),
+std::make_pair(std::string{ "a/b/c/../.." }, std::string{ "a" }),
+std::make_pair(std::string{ "a/b/c/../../.." }, std::string{}),
+std::make_pair(std::string{ "./.." }, std::string{ ".." }),
+std::make_pair(std::string{ "../." }, std::string{ ".." }),
+std::make_pair(std::string{ "../.." }, std::string{ "../.." }),
+std::make_pair(std::string{ "../../" }, std::string{ "../.." }),
+std::make_pair(std::string{ ".a" }, std::string{ ".a" }),
+std::make_pair(std::string{ ".a/b/.." }, std::string{ ".a" }),
+std::make_pair(std::string{ "...a/b../" }, std::string{ "...a/b.." }),
+std::make_pair(std::string{ "...a/.." }, std::string{}),
+std::make_pair(std::string{ "...a/b/.." }, std::string{ "...a" })
+);
 
 class TestCombineFixture : public ::testing::TestWithParam<std::tuple<std::string, std::string, std::string>> {
 public:
@@ -182,26 +179,19 @@ INSTANTIATE_TEST_CASE_P(
 		std::make_tuple(std::string{ "/a" }, std::string{ "/b" }, std::string{ "/c" }, std::string{ "/c" })
 	));
 
-TEST_STRING_PAIR_FIXTURE(TestGetDirectory, path1, expectedDir);
-
-TEST_P(TestGetDirectoryFixture, TestGetDirectory) {
+TEST_STRING_PAIR(GetDirectory, path1, expectedDir, {
 	ziopp::upath path{path1};
 	const ziopp::upath result = path.directory();
 	ASSERT_EQ(expectedDir, result.full_name());
-}
-
-INSTANTIATE_TEST_CASE_P(
-	Tests,
-	TestGetDirectoryFixture,
-	::testing::Values(
-		std::make_pair(std::string{}, std::string{}),
-		std::make_pair(std::string{"/a"}, std::string{"/"}),
-		std::make_pair(std::string{"/a/b"}, std::string{"/a"}),
-		std::make_pair(std::string{"/a/b/c.txt"}, std::string{"/a/b"}),
-		std::make_pair(std::string{"a"}, std::string{}),
-		std::make_pair(std::string{"../a"}, std::string{".."}),
-		std::make_pair(std::string{"../../a/b"}, std::string{"../../a"})
-	));
+},
+std::make_pair(std::string{}, std::string{}),
+std::make_pair(std::string{ "/a" }, std::string{ "/" }),
+std::make_pair(std::string{ "/a/b" }, std::string{ "/a" }),
+std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "/a/b" }),
+std::make_pair(std::string{ "a" }, std::string{}),
+std::make_pair(std::string{ "../a" }, std::string{ ".." }),
+std::make_pair(std::string{ "../../a/b" }, std::string{ "../../a" })
+);
 
 class TestInDirectoryFixture : public ::testing::TestWithParam<std::tuple<std::string, std::string, bool, bool>>
 {
@@ -254,46 +244,32 @@ INSTANTIATE_TEST_CASE_P(
         std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, true, true)
 	));
 
-TEST_STRING_PAIR_FIXTURE(TestName, path1, expectedName);
-
-TEST_P(TestNameFixture, TestName) {
+TEST_STRING_PAIR(GetName, path1, expectedName, {
 	ziopp::upath path{ path1 };
 	const std::string result = path.name();
 	ASSERT_EQ(expectedName, result);
-}
+},
+std::make_pair(std::string{}, std::string{}),
+std::make_pair(std::string{ "/" }, std::string{}),
+std::make_pair(std::string{ "/a" }, std::string{ "a" }),
+std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
+std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c.txt" }),
+std::make_pair(std::string{ "a" }, std::string{ "a" }),
+std::make_pair(std::string{ "../a" }, std::string{ "a" }),
+std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
+);
 
-INSTANTIATE_TEST_CASE_P(
-	Tests,
-	TestNameFixture,
-	::testing::Values(
-		std::make_pair(std::string{}, std::string{}),
-		std::make_pair(std::string{ "/" }, std::string{}),
-		std::make_pair(std::string{ "/a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
-		std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c.txt" }),
-		std::make_pair(std::string{ "a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "../a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
-	));
-
-TEST_STRING_PAIR_FIXTURE(TestNameWithoutExtension, path1, expectedName);
-
-TEST_P(TestNameWithoutExtensionFixture, TestNameWithoutExtension) {
+TEST_STRING_PAIR(NameWithoutExtension, path1, expectedName, {
 	ziopp::upath path{ path1 };
 	const std::string result = path.name_without_extension();
 	ASSERT_EQ(expectedName, result);
-}
-
-INSTANTIATE_TEST_CASE_P(
-	Tests,
-	TestNameWithoutExtensionFixture,
-	::testing::Values(
-		std::make_pair(std::string{ "" }, std::string{ "" }),
-		std::make_pair(std::string{ "/" }, std::string{ "" }),
-		std::make_pair(std::string{ "/a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
-		std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c" }),
-		std::make_pair(std::string{ "a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "../a" }, std::string{ "a" }),
-		std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
-	));
+},
+std::make_pair(std::string{}, std::string{}),
+std::make_pair(std::string{ "/" }, std::string{}),
+std::make_pair(std::string{ "/a" }, std::string{ "a" }),
+std::make_pair(std::string{ "/a/b" }, std::string{ "b" }),
+std::make_pair(std::string{ "/a/b/c.txt" }, std::string{ "c" }),
+std::make_pair(std::string{ "a" }, std::string{ "a" }),
+std::make_pair(std::string{ "../a" }, std::string{ "a" }),
+std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
+);

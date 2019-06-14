@@ -1,7 +1,8 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 #include <ziopp/upath.h>
 
-TEST(UPath, TestAbsoluteAndRelative) {
+TEST(upath, absolute_and_relative) {
 	ziopp::upath path{ std::string{ "x" } };
 	ASSERT_TRUE(path.relative());
 	ASSERT_FALSE(path.absolute());
@@ -20,7 +21,7 @@ TEST(UPath, TestAbsoluteAndRelative) {
 	ASSERT_TRUE(path.empty());
 }
 
-#define TEST_STRING_PAIR_FIXTURE(NAME, PARAMA, PARAMB) class NAME ## Fixture : public ::testing::TestWithParam<std::pair<std::string, std::string>> { \
+#define TEST_STRING_PAIR_FIXTURE(NAME, PARAMA, PARAMB) class NAME ## _fixture : public ::testing::TestWithParam<std::pair<std::string, std::string>> { \
 public: \
 void SetUp() override { \
 	auto param = GetParam(); \
@@ -33,10 +34,10 @@ protected: \
 }
 
 #define TEST_STRING_PAIR(NAME, PARAMA, PARAMB, TEST, ...) TEST_STRING_PAIR_FIXTURE(NAME, PARAMA, PARAMB);\
-TEST_P(NAME ## Fixture, NAME) TEST \
-INSTANTIATE_TEST_CASE_P(Tests, NAME ## Fixture, ::testing::Values(__VA_ARGS__))
+TEST_P(NAME ## _fixture, NAME) TEST \
+INSTANTIATE_TEST_CASE_P(upath, NAME ## _fixture, ::testing::Values(__VA_ARGS__))
 
-TEST_STRING_PAIR(Normalize, pathAsText, expectedResult, {
+TEST_STRING_PAIR(normalize, pathAsText, expectedResult, {
 	ziopp::upath path{ pathAsText };
 	ASSERT_EQ(expectedResult, path.full_name());
 
@@ -94,7 +95,7 @@ protected:
 	std::string expectedResult;
 };
 
-TEST_P(TestCombineFixture, TestCombine) {
+TEST_P(TestCombineFixture, combine) {
 	auto path = ziopp::upath::combine(path1, path2);
 	ASSERT_EQ(expectedResult, (std::string)path);
 
@@ -106,7 +107,7 @@ TEST_P(TestCombineFixture, TestCombine) {
 }
 
 INSTANTIATE_TEST_CASE_P(
-	Tests,
+	upath,
 	TestCombineFixture,
 	::testing::Values(
 		std::make_tuple(std::string{}, std::string{}, std::string{}),
@@ -157,7 +158,7 @@ protected:
 	std::string expectedResult;
 };
 
-TEST_P(TestCombine3Fixture, TestCombine3) {
+TEST_P(TestCombine3Fixture, combine3) {
 	auto path = ziopp::upath::combine(path1, path2, path3);
 
 	ASSERT_EQ(expectedResult, (std::string)path);
@@ -166,7 +167,7 @@ TEST_P(TestCombine3Fixture, TestCombine3) {
 }
 
 INSTANTIATE_TEST_CASE_P(
-	Tests,
+	upath,
 	TestCombine3Fixture,
 	::testing::Values(
 		std::make_tuple(std::string{}, std::string{}, std::string{}, std::string{}),
@@ -179,7 +180,7 @@ INSTANTIATE_TEST_CASE_P(
 		std::make_tuple(std::string{ "/a" }, std::string{ "/b" }, std::string{ "/c" }, std::string{ "/c" })
 	));
 
-TEST_STRING_PAIR(GetDirectory, path1, expectedDir, {
+TEST_STRING_PAIR(directory, path1, expectedDir, {
 	ziopp::upath path{path1};
 	const ziopp::upath result = path.directory();
 	ASSERT_EQ(expectedDir, result.full_name());
@@ -211,14 +212,14 @@ protected:
 	bool expected;
 };
 
-TEST_P(TestInDirectoryFixture, TestInDirectory) {
+TEST_P(TestInDirectoryFixture, in_directory) {
 	ziopp::upath path{path1};
 	bool result = path.in_directory(directory, recursive);
 	ASSERT_EQ(expected, result);
 }
 
 INSTANTIATE_TEST_CASE_P(
-	Tests,
+	upath,
 	TestInDirectoryFixture,
 	::testing::Values(
 		// Test automatic separator insertion
@@ -244,7 +245,7 @@ INSTANTIATE_TEST_CASE_P(
         std::make_tuple(std::string{ "/a/b" }, std::string{ "/a/b" }, true, true)
 	));
 
-TEST_STRING_PAIR(GetName, path1, expectedName, {
+TEST_STRING_PAIR(name, path1, expectedName, {
 	ziopp::upath path{ path1 };
 	const std::string result = path.name();
 	ASSERT_EQ(expectedName, result);
@@ -259,7 +260,7 @@ std::make_pair(std::string{ "../a" }, std::string{ "a" }),
 std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
 );
 
-TEST_STRING_PAIR(NameWithoutExtension, path1, expectedName, {
+TEST_STRING_PAIR(name_without_extension, path1, expectedName, {
 	ziopp::upath path{ path1 };
 	const std::string result = path.name_without_extension();
 	ASSERT_EQ(expectedName, result);
@@ -273,3 +274,13 @@ std::make_pair(std::string{ "a" }, std::string{ "a" }),
 std::make_pair(std::string{ "../a" }, std::string{ "a" }),
 std::make_pair(std::string{ "../../a/b" }, std::string{ "b" })
 );
+
+TEST(upath, split) {
+	ASSERT_THAT(ziopp::upath{}.split(), ::testing::IsEmpty());
+	ASSERT_THAT(ziopp::upath{ "/" }.split(), ::testing::IsEmpty());
+	ASSERT_THAT(ziopp::upath{ "/a" }.split(), ::testing::ElementsAre("a"));
+	ASSERT_THAT(ziopp::upath{ "/a/b/c" }.split(), ::testing::ElementsAre("a", "b", "c"));
+	ASSERT_THAT(ziopp::upath{ "a" }.split(), ::testing::ElementsAre("a"));
+	ASSERT_THAT(ziopp::upath{ "a/b" }.split(), ::testing::ElementsAre("a", "b"));
+	ASSERT_THAT(ziopp::upath{ "a/b/c" }.split(), ::testing::ElementsAre("a", "b", "c"));
+}

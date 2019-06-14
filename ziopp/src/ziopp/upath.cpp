@@ -367,7 +367,7 @@ namespace ziopp {
 		return full_name_.substr(1, index - 1);
 	}
 
-	const std::vector<std::string> upath::Split() const
+	const std::vector<std::string> upath::split() const
 	{
 		if (empty())
 		{

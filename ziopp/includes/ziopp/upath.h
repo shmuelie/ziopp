@@ -123,7 +123,7 @@ namespace ziopp {
 		 *
 		 * @return const std::vector<const std::string&> A list of sub path for each directory entry in the path (/a/b/c returns [a,b,c], or a/b/c returns [a,b,c]).
 		 */
-		const std::vector<std::string> Split() const;
+		const std::vector<std::string> split() const;
 
 		/**
 		 * @brief Checks if the path is in the given directory. Does not check if the paths exist.

@@ -2,8 +2,8 @@ cmake_minimum_required(VERSION 3.12)
 project("ziopp")
 
 set(ZIOPP_INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/includes)
-set(ZIOPP_HEADERS ${ZIOPP_INCLUDE}/ziopp/upath.h)
-set(ZIOPP_SOURCE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/src/ziopp/upath.cpp)
+set(ZIOPP_HEADERS ${ZIOPP_INCLUDE}/ziopp/upath.h ${ZIOPP_INCLUDE}/ziopp/filesystem.h ${ZIOPP_INCLUDE}/ziopp/upath_iterator.h ${ZIOPP_INCLUDE}/ziopp/filesystem_watcher.h)
+set(ZIOPP_SOURCE_CODE ${CMAKE_CURRENT_SOURCE_DIR}/src/ziopp/upath.cpp ${CMAKE_CURRENT_SOURCE_DIR}/src/ziopp/filesystem.cpp)
 
 add_library(ziopp ${ZIOPP_HEADERS} ${ZIOPP_SOURCE_CODE})
 
